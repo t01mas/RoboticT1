@@ -8,9 +8,9 @@
 \usepackage{graphicx}          % para inserir imagens
 \usepackage{amsmath}           % símbolos matemáticos
 \usepackage[colorlinks=true,
-            linkcolor=red,        % cor dos links internos (ex: índice, seções)
-            urlcolor=blue,         % cor dos links externos (URLs)
-            citecolor=green]{hyperref} % cor das referências (se tiveres citações) 
+            linkcolor=red,        % cor dos links internos
+            urlcolor=blue,         % cor dos links externos
+            ]{hyperref}  
 \usepackage{listings}          % para inserir código
 \usepackage{xcolor}            % cores no código
 \usepackage[numbered,framed]{matlab-prettifier} % codigo no matlab
@@ -105,22 +105,22 @@ ur10.base = transl(0, 0, 0); % Situar a Base no (0,0,0)
 
 \subsubsection{Movimento dos blocos por Cinemática inversa}
 \begin{enumerate}
-    \item \textbf{Definição das Posições:} São definidas as matrizes de transformação para os pontos: uma posição de aproximação segura acima do bloco, a posição exata de "pegar" (\textit{pick}), uma posição de segurança para mover o bloco, e a posição final de "largar" (\textit{place}). Todas as posições incluem uma rotação de 180º em torno de X para a ferramenta apontar para baixo.
+    \item \textbf{Definição das Posições:} São definidas as matrizes de transformação para os pontos com uma posição de aproximação segura acima do bloco, a posição exata de "pegar" (\textit{pick}), uma posição de segurança para mover o bloco, e a posição final de "largar" (\textit{place}). Todas as posições incluem uma rotação de 180º em torno de X para a ferramenta apontar para baixo.
     
-    \item \textbf{Cálculo da Cinemática Inversa:} Para cada posição (ex: \texttt{MPickVrd}), as juntas correspondente ao calculo com a função \texttt{ur10.ikine(MPickVrd)}.
+    \item \textbf{Cálculo da Cinemática Inversa:} Para cada posição (ex: \texttt{MPickVrd}), as juntas correspondentes são calculadas pela função \texttt{ur10.ikine(MPickVrd)}.
     
-    \item \textbf{Geração da Trajetória:} Com as posições de juntas (ex: \texttt{Home} e \texttt{JPickVrd}), a função \texttt{jtraj(Home, JPickVrd, NSteps)} é usada para criar a trajetória.
+    \item \textbf{Geração da Trajetória:} Com as posições das juntas (ex: \texttt{Home} e \texttt{JPickVrd}), a função \texttt{jtraj(Home, JPickVrd, NSteps)} é usada para criar a trajetória.
     
     \item \textbf{Animação e Atualização do Bloco:} O robô é animado por \texttt{ur10.animate()} ou \texttt{ur10.plot()} dentro de um ciclo \texttt{for}. Durante os movimentos em que o bloco está "agarrado", a função auxiliar \texttt{AtualizaBloco} é chamada para redesenhar os vértices do bloco, fazendo-o seguir o robô.
 \end{enumerate}
 
 \subsubsection{Desenho da linha através do jacobiano}
 \begin{enumerate}
-    \item \textbf{Definição da Trajetória Cartesiana:} Calculo da trajetória em 3D através do \texttt{ctraj}, com o ponto inicial (\texttt{MStart}) e final (\texttt{MFinish}).
+    \item \textbf{Definição da Trajetória Cartesiana:} Cálculo da trajetória em 3D através do \texttt{ctraj}, com o ponto inicial (\texttt{MStart}) e final (\texttt{MFinish}).
 
-    \item \textbf{Cálculo da velocidade das juntas:} Calculo da velocidades cartesianas através da função \texttt{tr2delta}.
+    \item \textbf{Cálculo da velocidade das juntas:} Cálculo das velocidades cartesianas através da função \texttt{tr2delta}.
 
-    \item \textbf{Jacobiano:} Calculo do jacobiano, através do \texttt{jacob0}, as velocidades lineares e angulares das juntas pelo jacobiano inverso através do \texttt{pinv}.
+    \item \textbf{Jacobiano:} Cálculo do jacobiano, através do \texttt{jacob0}, e o cálculo das velocidades lineares e angulares das juntas pelo jacobiano inverso através do \texttt{pinv}.
 \end{enumerate}
 
 É implementado pelo seguinte ciclo \texttt{for}: 
@@ -144,7 +144,7 @@ end
 
 \end{lstlisting}
 
-Função usa a função \textbf{Patch} do MATLAB para criar os blocos, através dos vértices e das faces do cubo/retângulo. 
+Função apresentada no \texttt{Listing 3}, usa a função \textbf{Patch} do MATLAB para criar os blocos, através dos vértices e das faces do cubo/retângulo. 
 
 \begin{lstlisting}[style = Matlab-editor, caption={Função auxiliar para atualizar a posição do bloco}]
 function AtualizaBloco(Bloco,traj,Robo,i)
@@ -152,11 +152,12 @@ function AtualizaBloco(Bloco,traj,Robo,i)
 end
 \end{lstlisting}
 
-Esta função usa o i de um ciclo for, para receber a posição anterior do bloco e atualiza-o para a próxima posição usando cinemática direta.
-\section{Vídeo do Youtube}
+Função apresentada no \texttt{Listing 4}, usa o i de um ciclo for, para receber a posição anterior do bloco e atualiza-o para a próxima posição usando cinemática direta.
+
+\section{Vídeo No Youtube}
 
 \begin{center}
-\href{https://youtu.be/Y7lUG2VKP8M}{Vídeo No Youtube}
+\href{https://youtu.be/Y7lUG2VKP8M}{Link relativo ao vídeo no Youtube}
 \end{center}
 
 \section{Referências e Links Úteis}
@@ -173,7 +174,7 @@ Esta função usa o i de um ciclo for, para receber a posição anterior do bloc
 
     \item \textbf{Resposta no Matlab Help Central :} 
     
-    \href{https://www.mathworks.com/matlabcentral/answers/1578550-how-to-plot-a-3d-cube-based-if-i-have-the-coordinates-of-the-8-surrounding-nodes#answer_823944}{\url{https://www.mathworks.com/matlabcentral/answers/1578550-how-to-plot-a-3d-cube-based-if-i-have-the-coordinates-of-the-8-surrounding-nodes#answer_823944}}
+    \href{https://www.mathworks.com/matlabcentral/answers/1578550-how-to-plot-a-3d-cube-based-if-i-have-the-coordinates-of-the-8-surrounding-nodes#answer_823944}{\url{https://www.mathworks.com/matlabcentral/answers/1578550-how-to-plot-a-3d-cube-based-if-i-have-the-coordinates-of-the-8-surrounding-nodes##answer_823944}}
 
     \item \textbf{Prompts usados em LLM's} (Não estão em ordem cronológica)
     \begin{itemize}
