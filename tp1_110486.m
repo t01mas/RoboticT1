@@ -1,17 +1,10 @@
-% %% 
-% function tp1_110486(offset)
-% 
-% %% Parametros Iniciais
-% 
-% if nargin < 0.01
-%     offset = 0; % valor por omissão
-%end
+function tp1_110486(offset)
 
-%% Parametros de teste
+%% Parametros Iniciais
 
-clear, clc,
-
-offset = 0.2;
+if nargin < 0.01
+    offset = 0; % valor por omissão
+end
 
 %% Parametros Base do Robo
 
@@ -36,7 +29,7 @@ BlocoVerde = CriaBloco('cubo', [0.6+offset 0.4 0], 'g', 0.2); % Cubo verde
 BlocoAzul = CriaBloco('cubo', [-0.6-offset 0.4 0], 'b', 0.2); % Cubo Azul
 
 
-%% Plot Robo       
+%% Plot Robo
 
 ur10.plot(Home, 'noarrow') % noarrow porque fica mais facil de perceber
 
@@ -84,9 +77,9 @@ JPickVrd  = ur10.ikine(MPickVrd);
 JPickVrd2 = ur10.ikine(MPickVrd2);
 JPlaceVrd2 = ur10.ikine(MPlaceVrd2);
 JPlaceVrd = ur10.ikine(MPlaceVrd);
- 
 
-% Calcula Trajetórias 
+
+% Calcula Trajetórias
 NSteps = 50;
 
 if ~isempty(JPickVrd) && ~isempty(JPickVrd2) && ~isempty(JPlaceVrd2) && ~isempty(JPlaceVrd)
@@ -166,7 +159,7 @@ JPickAzl  = ur10.ikine(MPickAzl);
 JPickAzl2  = ur10.ikine(MPickAzl2);
 JPlaceAzl = ur10.ikine(MPlaceAzl);
 
-% Calcula Trajetórias 
+% Calcula Trajetórias
 
 if ~isempty(JPickAzl) && ~isempty(JPickAzl2) && ~isempty(JPlaceAzl)
 
@@ -218,7 +211,7 @@ delete(a);
 a = text(0,0,1.6,'Fazer linha entre 2 vertices dos blocos','FontName','Impact','FontSize',20);
 
 StartPos = [0.05 0.9 0.35 - TamanhoPonta];
-FinishPos = [-0.05 0.9 0.35 - TamanhoPonta]; 
+FinishPos = [-0.05 0.9 0.35 - TamanhoPonta];
 
 % Matrizes das posiçoes alvo
 
@@ -239,32 +232,51 @@ if ~isempty(JStart) && ~isempty(JFinish) && C == 0
 
     % Trajetória de JStart
     TrajLineStart = jtraj(Home, JStart, NSteps); % 50 passos
+    
+    Traj3d = ctraj(MStart, MFinish, NSteps); % Trajetoria em 3d
+    
+    TrajLine = zeros(NSteps, 6); 
+    TrajLine(1, :) = JStart;     % O primeiro ponto é a posição inicial
+    DeltaPath = zeros(6, NSteps - 1);
+    
+    for k = 1:(NSteps - 1)
+        DeltaPath(:, k) = tr2delta(Traj3d(:,:,k), Traj3d(:,:,k+1));
+    end
 
-    % Trajetória de JFinish
-    TrajLine = jtraj(JStart, JFinish, NSteps); % 50 passos
-
-    % Trajetória de Home
-    TrajLineFinish = jtraj(JFinish, Home, NSteps); % 50 passos
-
+    for k = 1:(NSteps - 1)
+        Pos = TrajLine(k, :); % Posição atual das juntas
+        J = ur10.jacob0(Pos); % Obter o Jacobiano (6x6) para a configuração atual
+        Ji = pinv(J);
+        dq = Ji * DeltaPath(:, k);
+        TrajLine(k+1, :) = Pos + dq'; 
+    end
+    
+    TrajLineFinish = jtraj(TrajLine(end, :), Home, NSteps); % 50 passos ( Usamos o ponto final da trajetoria devido a erros no jacobiano)
+    
     % Anima Trajetória da linha
     ur10.animate(TrajLineStart);
-    ur10.animate(TrajLine);
-    ur10.animate(TrajLineFinish);
 
+    %Criação da linha na trajetoria do Robô
+    Linha = transl(Traj3d);
+    hold on 
+    plot3(Linha(:,1), Linha(:,2), Linha(:,3) - TamanhoPonta/2, 'g', 'LineWidth', 2);
+    
+    ur10.plot(TrajLine, 'delay', 0.1);
+    ur10.animate(TrajLineFinish);
+    
     delete(a);
     a = text(0,0,1.6,'END','FontName','Impact','FontSize',20);
 else
 
     disp('Uma ou mais matrizes estão vazias ou não foram movidos os 2 Blocos');
-    
-    
+
+
 end
 
-%end
+end
 
 %% Funçoes auciliares
 
-    
 function B = CriaBloco(Tipo, Pos, Cor, Dimensoes)
 
 % Valores padrão
@@ -282,7 +294,7 @@ if nargin < 2, Pos = [0 0 0]; end
 switch lower(Tipo)
     case 'cubo'
         L = Dimensoes(1);
-        W = Dimensoes(1); 
+        W = Dimensoes(1);
         H = Dimensoes(1);
     case 'retangulo'
         L = Dimensoes(1);
@@ -317,30 +329,30 @@ faces = [
 % Posicionar no centro
 
 vertices(:,1) = vertices(:,1) - mean([0 L]) + Pos(1); % Da posiçao do bloco em x e aterra-o
-vertices(:,2) = vertices(:,2) - mean([0 W]) + Pos(2); % Da posiçao do bloco em y e aterra-o 
+vertices(:,2) = vertices(:,2) - mean([0 W]) + Pos(2); % Da posiçao do bloco em y e aterra-o
 vertices(:,3) = vertices(:,3) + Pos(3); % Da posiçao do bloco em z
 
 % PLot
 
 B = patch('Vertices', vertices, 'Faces', faces, ...
-      'FaceColor', Cor, 'FaceAlpha', 1, 'EdgeColor', 'k');
+    'FaceColor', Cor, 'FaceAlpha', 1, 'EdgeColor', 'k');
 
 % Ajustes
 
 axis equal;
 xlabel('X'); ylabel('Y'); zlabel('Z');
 grid on;hold on;
-    
+
 
 end
 
 function AtualizaBloco(Bloco,traj,Robo,i)
-% Esta função deve ser chamada dentro de um ciclo for 
+% Esta função deve ser chamada dentro de um ciclo for
 
-    Vertices = get(Bloco, 'Vertices');
-    CentroAtual = mean(Vertices,1);
-    Deslocamento = Robo.fkine(traj(i,:))*Robo.tool.t - CentroAtual';
-    Vertices = Vertices + Deslocamento';
-    set(Bloco, 'Vertices', Vertices);
+Vertices = get(Bloco, 'Vertices');
+CentroAtual = mean(Vertices,1);
+Deslocamento = Robo.fkine(traj(i,:))*Robo.tool.t - CentroAtual';
+Vertices = Vertices + Deslocamento';
+set(Bloco, 'Vertices', Vertices);
 
 end
