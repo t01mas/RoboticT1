@@ -51,6 +51,6 @@ Execute a função principal no terminal do MATLAB:
 tp1_110486(0) % O argumento da função permite ajustar a distância inicial dos blocos em relação a mesa
 ```
 ---
-Este projeto é distribuído sob a licença GNU GENERAL PUBLIC LICENSE. Para mais informações, consulte o ficheiro [LICENSE](.\COPYING) presente neste repositório.
+Este projeto é distribuído sob a licença GNU GENERAL PUBLIC LICENSE. Para mais informações, consulte o ficheiro [LICENSE](COPYING) presente neste repositório.
 
 ---
